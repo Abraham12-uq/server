@@ -123,7 +123,7 @@ console.log(decoded.email);
                 "months",
 
               transaction_amount:
-                429,
+                499,
 
               currency_id:
                 "MXN",
