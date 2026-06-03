@@ -132,8 +132,7 @@ console.log(
 
             reason:
               "Renta Mensual Sitio Web",
-payer_email:
-  correoMP,
+
 
       external_reference:
         codigoCliente,
@@ -162,6 +161,11 @@ payer_email:
           },
 
         });
+
+        console.log("========== SUSCRIPCION CREADA ==========");
+console.log("SUB ID:", subscription.id);
+console.log("INIT POINT:", subscription.init_point);
+console.log(subscription);
 
       await db
         .collection("clientes")
