@@ -14,6 +14,15 @@ console.log("=================================");
 
 dotenv.config();
 
+console.log("MP_ACCESS_TOKEN:");
+
+if (process.env.MP_ACCESS_TOKEN) {
+  console.log(
+    process.env.MP_ACCESS_TOKEN.substring(0, 20) + "..."
+  );
+} else {
+  console.log("NO EXISTE");
+}
 const app = express();
 
 app.use(cors());
@@ -43,11 +52,6 @@ app.get("/test123", (req, res) => {
 });
 
 
-
-app.get("/test123", (req, res) => {
-  res.send("SOY EL SERVER CORRECTO");
-});
-
 app.post(
   "/create-subscription",
   async (req, res) => {
@@ -56,6 +60,9 @@ app.post(
 
       const authHeader =
         req.headers.authorization;
+
+        console.log("========== AUTH HEADER ==========");
+console.log(authHeader);
 
       if (!authHeader) {
 
@@ -71,10 +78,17 @@ app.post(
           ""
         );
 
+        console.log("========== TOKEN ==========");
+console.log(token.substring(0, 30));
+
       const decoded =
         await admin
           .auth()
           .verifyIdToken(token);
+
+          console.log("========== TOKEN VALIDO ==========");
+console.log(decoded.uid);
+console.log(decoded.email);
 
       const uid = decoded.uid;
       console.log("EMAIL USUARIO:");
@@ -98,8 +112,18 @@ console.log(decoded.email);
       const clienteData =
         clienteDoc.data();
 
+        console.log("CLIENTE DATA:");
+console.log(clienteData);
+
       const codigoCliente =
         clienteData.codigoCliente;
+const correoMP =
+  clienteData.mercadoPagoEmail ||
+  clienteData.email;
+console.log(
+  "Correo MP:",
+  clienteData.mercadoPagoEmail
+);
 
       const subscription =
         await preApproval.create({
@@ -108,9 +132,8 @@ console.log(decoded.email);
 
             reason:
               "Renta Mensual Sitio Web",
-
-               payer_email:
-        decoded.email,
+payer_email:
+  correoMP,
 
       external_reference:
         codigoCliente,
@@ -122,8 +145,8 @@ console.log(decoded.email);
               frequency_type:
                 "months",
 
-              transaction_amount:
-                10,
+              transaction_amount:10,
+
 
               currency_id:
                 "MXN",
@@ -159,20 +182,19 @@ console.log(decoded.email);
 
     } catch (error) {
 
-      console.log(
-        "ERROR MP:"
-      );
+  console.log("========== ERROR MP ==========");
+  console.dir(error, { depth: null });
 
-      console.log(error);
+  if (error.cause) {
+    console.log("========== CAUSE ==========");
+    console.dir(error.cause, { depth: null });
+  }
 
-      res.status(500).json({
+  res.status(500).json({
+    error: error.message,
+  });
 
-        error:
-          error.message,
-
-      });
-
-    }
+}
   }
 );
 
