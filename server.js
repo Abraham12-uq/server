@@ -120,6 +120,16 @@ console.log(clienteData);
 const correoMP =
   clienteData.mercadoPagoEmail ||
   clienteData.email;
+
+      if (!correoMP) {
+  return res.status(400).json({
+    error: "El cliente no tiene email registrado"
+  });
+}
+
+console.log("CORREO MP:");
+console.log(correoMP);
+      
 console.log(
   "Correo MP:",
   clienteData.mercadoPagoEmail
@@ -128,17 +138,18 @@ console.log(
       const subscription =
         await preApproval.create({
 
-          body: {
+         body: {
 
-            reason:
-              "Renta Mensual Sitio Web",
+  reason:
+    "Renta Mensual Sitio Web",
 
+  external_reference:
+    codigoCliente,
 
-      external_reference:
-        codigoCliente,
+  payer_email:
+    correoMP,
 
-            auto_recurring: {
-
+  auto_recurring: {
               frequency: 1,
 
               frequency_type:
